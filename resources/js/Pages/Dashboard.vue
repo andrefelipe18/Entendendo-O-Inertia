@@ -1,13 +1,31 @@
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
-import Welcome from "@/Components/Welcome.vue";
+</script>
+<script>
+import { Link } from '@inertiajs/vue3'
+export default {
+  props: {
+    posts: Object,
+  },
+  components:{
+    AppLayout,
+    Link
+  },
+  methods: {
+    apagar(id){
+        if(confirm('Deseja realmente apagar este post?')){
+            this.$inertia.delete(route('posts.destroy', id))
+        }
+    }
+  }
+};
 </script>
 
 <template>
   <AppLayout title="Dashboard">
     <template #header>
       <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        LISTAGEM DE POSTS
+        LISTAGEM DE POSTS - {{ $page.props.user.nome }} -- {{ $page.props.user.email }}
       </h2>
     </template>
 
@@ -28,8 +46,15 @@ import Welcome from "@/Components/Welcome.vue";
                     lg:px-8
                   "
                 >
+                <Link class="bg-gray-700 rounded-md p-2 text-emerald-500 font-bold" :href="route('posts.create')">
+                    Criar post
+                </Link>
+                <div class="text-emerald-500 font-bold mt-2 mb-2" v-if="$page.props.flash.message">
+                    {{ $page.props.flash.message }}
+                </div>
                   <div
                     class="
+                    mt-5
                       overflow-hidden
                       border border-gray-200
                       dark:border-gray-700
@@ -58,7 +83,7 @@ import Welcome from "@/Components/Welcome.vue";
                               dark:text-gray-400
                             "
                           >
-                            <button
+                            <p
                               class="
                                 flex
                                 items-center
@@ -67,7 +92,7 @@ import Welcome from "@/Components/Welcome.vue";
                               "
                             >
                               <span>ID</span>
-                            </button>
+                            </p>
                           </th>
 
                           <th
@@ -99,6 +124,19 @@ import Welcome from "@/Components/Welcome.vue";
                             "
                           >
                             Content
+                          </th>
+                          <th scope="col"
+                            class="
+                              px-12
+                              py-3.5
+                              text-sm
+                              font-normal
+                              text-left
+                              rtl:text-right
+                              text-gray-500
+                              dark:text-gray-400
+                            ">
+                            Ações
                           </th>
                         </tr>
                       </thead>
@@ -164,6 +202,16 @@ import Welcome from "@/Components/Welcome.vue";
                               </p>
                             </div>
                           </td>
+                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
+                                <div class="flex justify-between">
+                                    <Link :href="route('posts.edit', post.id)" class="bg-gray-700 rounded-md p-2 mr-2 text-blue-600 font-bold mb-1" >
+                                        Editar
+                                    </Link>
+                                    <Button @click="apagar(post.id)" class="bg-gray-700 rounded-md p-2 text-red-500 font-bold mb-1"  type="button">
+                                        Apagar
+                                    </Button>
+                                </div>
+                            </td>
                         </tr>
                       </tbody>
                     </table>
@@ -177,10 +225,3 @@ import Welcome from "@/Components/Welcome.vue";
     </div>
   </AppLayout>
 </template>
-<script>
-export default {
-  props: {
-    posts: Object,
-  },
-};
-</script>

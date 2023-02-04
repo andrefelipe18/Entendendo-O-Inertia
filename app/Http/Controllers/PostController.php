@@ -34,7 +34,9 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        //Retornando a view com vue
+        Return Inertia::render('CreatePost');
+
     }
 
     /**
@@ -46,7 +48,27 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //Validando os dados
+        $validacoes = [
+            'title' => 'required|max:60|min:3|unique:posts',
+            'content' => 'required',
+        ];
+        $mensagens = [
+            'title.required' => 'O título é obrigatório',
+            'title.max' => 'O título deve ter no máximo 255 caracteres',
+            'title.min' => 'O título deve ter no mínimo 3 caracteres',
+            'title.unique' => 'O título já está em uso',
+            'content.required' => 'O conteúdo é obrigatório',
+        ];
+        $request->validate($validacoes, $mensagens);
+        //Criando um novo post no banco de dados
+        Post::create([
+            'title' => $request->title,
+            'content' => $request->content,
+        ]);
+
+        //Redirecionando para a rota dashboard
+        return redirect()->route('dashboard')->with('message', 'Post criado com sucesso!');
     }
 
     /**
@@ -68,7 +90,10 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        //
+        //Retornando a view com vue
+        return Inertia::render('EditPost', [
+            'post' => $post,
+        ]);
     }
 
     /**
@@ -81,7 +106,26 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+        //Validando os dados
+        $validacoes = [
+            'title' => 'required|max:60|min:3|unique:posts',
+            'content' => 'required',
+        ];
+        $mensagens = [
+            'title.required' => 'O título é obrigatório',
+            'title.max' => 'O título deve ter no máximo 255 caracteres',
+            'title.min' => 'O título deve ter no mínimo 3 caracteres',
+            'title.unique' => 'O título já está em uso',
+            'content.required' => 'O conteúdo é obrigatório',
+        ];
+        $request->validate($validacoes, $mensagens);
+        //Atualizando o post no banco de dados
+        $post->update([
+            'title' => $request->title,
+            'content' => $request->content,
+        ]);
+        //Redirecionando para a rota dashboard
+        return redirect()->route('dashboard');
     }
 
     /**
@@ -92,6 +136,9 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        //Deletando o post no banco de dados
+        $post->delete();
+        //Redirecionando para a rota dashboard
+        return redirect()->route('dashboard');
     }
 }
